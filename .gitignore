@@ -7,3 +7,4 @@ Session.vim
 *.cache
 .idea/
 vendor/
+composer.lock
