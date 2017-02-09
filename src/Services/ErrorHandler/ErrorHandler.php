@@ -1,5 +1,8 @@
 <?php
 namespace Pkof\Services\ErrorHandler;
+
+use Pkof\Services\Request\Request;
+use Pkof\Services\Response\Response;
 /**
  * Created by PhpStorm.
  * User: likun
@@ -14,10 +17,10 @@ class ErrorHandler
 
     private $exception;
 
-    public function __construct($Request, $Response)
+    public function __construct(Request $request, Response $response)
     {
-        $this->request  = $Request;
-        $this->response = $Response;
+        $this->request  = $request;
+        $this->response = $response;
     }
 
     public function setException(Exception $e)

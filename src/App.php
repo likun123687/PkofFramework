@@ -13,7 +13,7 @@ class App
         $this->container = $container;
     }
 
-    public function __callStatic($name, $arguments)
+    public static function __callStatic($name, $arguments)
     {
 
     }
