@@ -1,0 +1,17 @@
+{
+  "name": "pkof/router",
+  "description": "Router for pkof framework",
+  "license": "MIT",
+  "require": {
+    "php": ">=5.4.0"
+  },
+  "authors": [
+      {
+          "name": "likun",
+          "email": "378186878@qq.com"
+      }
+  ],
+  "autoload": {
+    "psr-4": {"App\\Services\\Router\\": ""}
+  }
+}

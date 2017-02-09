@@ -1,0 +1,31 @@
+{
+    "name": "likun123687/PkofFramework",
+    "description": "framework for pkof",
+    "keywords": [
+        "framework",
+        "pkof",
+        "tiny"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "likun",
+            "email": "likun123687@gmail.com"
+        }
+    ],
+    "type": "library",
+    "require": {
+        "php": ">=5.4",
+        "predis/predis": "*",
+        "monolog/monolog": "*",
+        "pimple/pimple": "~3.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "5.2.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Pkof\\": "src/"
+        }
+    }
+}
