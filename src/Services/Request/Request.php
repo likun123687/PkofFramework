@@ -2,6 +2,9 @@
 
 namespace Pkof\Services\Request;
 
+use Pkof\Services\Cookie\CookieHandler;
+use Pkof\Services\Session\Session;
+
 /**
  * Class Request
  * @author likun
@@ -36,6 +39,15 @@ class Request implements RequestInterface
     private $path;
     private $query;
     private $url;
+
+    private $cookieHandler;
+    private $session;
+
+    public function __construct(CookieHandler $cookieHandler, Session $session)
+    {
+        $this->cookieHandler = $cookieHandler;
+        $this->session       = $session;
+    }
 
     private function parseContentFromBody()
     {
@@ -155,6 +167,16 @@ class Request implements RequestInterface
     public function body()
     {
         return $this->body;
+    }
+
+    public function session()
+    {
+        return $this->session;
+    }
+
+    public function cookieHandle()
+    {
+        return $this->cookieHandler;
     }
 
 }
