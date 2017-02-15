@@ -21,29 +21,34 @@ class RequestValidator extends Validator
         $this->response = $response;
     }
 
-    private function rules()
+    public function rules()
     {
         return [
-
+            "id"   => ['required', 'unique'],
+            "name" => ['required']
         ];
     }
 
-    private function names()
+    public function names()
     {
         return [
-
+            "id"   => 'UserId',
+            "name" => "Name",
         ];
     }
 
-    private function customerError()
+    public function customerError()
     {
         return [
-
+            "customer.sdff" => 'sdff',
         ];
     }
 
     public function validate()
     {
         parent::validate();
+        if (!empty($this->errors)) {
+            throw 
+        }
     }
 }
