@@ -48,14 +48,14 @@ class Router
             throw new InvalidArgumentWithContextException('Not support method', $method);
         }
         if (count($params) !== 2) {
-            throw new InvalidArgumentWithContextException('Wrong router params register, url or callback can not be empty string.');
+            throw new InvalidArgumentWithContextException('Wrong router params register, url or callback can not be empty string.', $method);
         }
 
         $url      = $params[0];
         $callback = $params[1];
 
         if ($url == "" || $callback == "") {
-            throw new RuntimeWithContextException('Wrong router params register, url or callback can not be empty string.');
+            throw new RuntimeWithContextException('Wrong router params register, url or callback can not be empty string.', $method);
         }
 
         if (is_string($callback) && strpos(trim($callback, '@'), '@') == false) {

@@ -12,8 +12,8 @@ use Pkof\Exceptions\Error\RuntimeWithContextException;
  */
 class RedisStore implements StoreInterface
 {
+    use PrefixTrait;
     private $client;
-    private $prefix;
 
     /**
      * RedisStore constructor.
@@ -34,6 +34,8 @@ class RedisStore implements StoreInterface
      */
     public function get($key)
     {
+        $key = $this->getPrefixKey($key);
+
         return $this->client->get($key);
     }
 
@@ -48,6 +50,8 @@ class RedisStore implements StoreInterface
             throw new InvalidArgumentWithContextException('Can not get multi keys by empty array.', $keys);
         }
 
+        $keys = $this->getPrefixKey($keys);
+
         return call_user_func_array(array($this->client, 'mget'), $keys);
     }
 
@@ -58,6 +62,7 @@ class RedisStore implements StoreInterface
      */
     public function put($key, $value, $minutes = 24 * 60)
     {
+        $key = $this->getPrefixKey($key);
         if ($this->client->setex($key, $value, $minutes * 60) !== 'OK') {
             throw new RuntimeWithContextException('Setex cache error.', func_get_args());
         }
@@ -71,6 +76,8 @@ class RedisStore implements StoreInterface
      */
     public function increment($key, $value = 1)
     {
+        $key = $this->getPrefixKey($key);
+
         return $this->client->incrbyfloat($key, $value);
     }
 
@@ -82,6 +89,8 @@ class RedisStore implements StoreInterface
      */
     public function decrement($key, $value = 1)
     {
+        $key = $this->getPrefixKey($key);
+
         return $this->client->incrbyfloat($key, -$value);
     }
 
@@ -91,6 +100,7 @@ class RedisStore implements StoreInterface
      */
     public function forever($key, $value)
     {
+        $key = $this->getPrefixKey($key);
         if ($this->client->set($key, $value) !== 'OK') {
             throw new RuntimeWithContextException('Set key cache forever error.', func_get_args());
         }
@@ -103,6 +113,8 @@ class RedisStore implements StoreInterface
      */
     public function forget($key)
     {
+        $key = $this->getPrefixKey($key);
+
         return $this->client->del($key);
     }
 
@@ -114,21 +126,5 @@ class RedisStore implements StoreInterface
         if ($this->client->flushdb() !== 'OK') {
             throw new \RuntimeException("Flush cache error");
         }
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getPrefix()
-    {
-        return $this->prefix;
-    }
-
-    /**
-     * @param $prefix
-     */
-    public function setPrefix($prefix)
-    {
-        $this->prefix = $prefix;
     }
 }

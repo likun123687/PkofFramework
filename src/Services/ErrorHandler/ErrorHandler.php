@@ -3,11 +3,10 @@ namespace Pkof\Services\ErrorHandler;
 
 use Pkof\Services\Request\Request;
 use Pkof\Services\Response\Response;
+
 /**
- * Created by PhpStorm.
- * User: likun
- * Date: 17/2/7
- * Time: AM4:47
+ * Class ErrorHandler
+ * @package Pkof\Services\ErrorHandler
  */
 class ErrorHandler
 {

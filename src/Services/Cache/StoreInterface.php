@@ -23,8 +23,4 @@ Interface StoreInterface
     public function forget($key);
 
     public function flush();
-
-    public function getPrefix();
-
-    public function setPrefix($prefix);
 }
