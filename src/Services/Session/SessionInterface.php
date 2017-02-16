@@ -4,7 +4,7 @@ namespace Pkof\Services\Session;
 
 /**
  * Interface SessionInterface
- * @author likun
+ * @package Pkof\Services\Session
  */
 interface SessionInterface
 {

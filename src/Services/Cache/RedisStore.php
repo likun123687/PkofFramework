@@ -3,6 +3,8 @@
 namespace Pkof\Services\Cache;
 
 use Predis\Client;
+use Pkof\Exceptions\Error\InvalidArgumentWithContextException;
+use Pkof\Exceptions\Error\RuntimeWithContextException;
 
 /**
  * Class RedisStore
@@ -15,8 +17,9 @@ class RedisStore implements StoreInterface
 
     /**
      * RedisStore constructor.
+     *
      * @param Client $client
-     * @param $prefix
+     * @param        $prefix
      */
     public function __construct(Client $client, $prefix)
     {
@@ -26,6 +29,7 @@ class RedisStore implements StoreInterface
 
     /**
      * @param $key
+     *
      * @return string
      */
     public function get($key)
@@ -35,32 +39,34 @@ class RedisStore implements StoreInterface
 
     /**
      * @param array $keys
+     *
      * @return mixed
      */
     public function many(array $keys)
     {
         if (empty($keys)) {
-            throw new \InvalidArgumentException('Can not get multi keys by empty array: '. var_export($keys, true));
+            throw new InvalidArgumentWithContextException('Can not get multi keys by empty array.', $keys);
         }
 
         return call_user_func_array(array($this->client, 'mget'), $keys);
     }
 
     /**
-     * @param $key
-     * @param $value
+     * @param     $key
+     * @param     $value
      * @param int $minutes
      */
     public function put($key, $value, $minutes = 24 * 60)
     {
         if ($this->client->setex($key, $value, $minutes * 60) !== 'OK') {
-            throw new \RuntimeException('Setex cache error: ' . print_r(func_get_args(),true));
+            throw new RuntimeWithContextException('Setex cache error.', func_get_args());
         }
     }
 
     /**
-     * @param $key
+     * @param     $key
      * @param int $value
+     *
      * @return string
      */
     public function increment($key, $value = 1)
@@ -69,8 +75,9 @@ class RedisStore implements StoreInterface
     }
 
     /**
-     * @param $key
+     * @param     $key
      * @param int $value
+     *
      * @return string
      */
     public function decrement($key, $value = 1)
@@ -85,12 +92,13 @@ class RedisStore implements StoreInterface
     public function forever($key, $value)
     {
         if ($this->client->set($key, $value) !== 'OK') {
-            throw new \RuntimeException('set key cache forever error: ' . print_r(func_get_args(),true));
+            throw new RuntimeWithContextException('Set key cache forever error.', func_get_args());
         }
     }
 
     /**
      * @param $key
+     *
      * @return int
      */
     public function forget($key)

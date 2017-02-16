@@ -4,9 +4,8 @@ namespace Pkof\Services\Session;
 
 /**
  * Class Session
- * @author likun
+ * @package Pkof\Services\Session
  */
-
 class Session implements SessionInterface
 {
     private $flashKeyName;

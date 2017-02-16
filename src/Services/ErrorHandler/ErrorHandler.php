@@ -23,15 +23,15 @@ class ErrorHandler
         $this->response = $response;
     }
 
-    public function setException(Exception $e)
+    public function setException(\Exception $e)
     {
         $this->exception = $e;
     }
 
     public function handler()
     {
-        if ($this->exception instanceof RuntimeException) {
-
-        }
+        //if http exception
+        //if validator exception
+        //if other exception
     }
 }

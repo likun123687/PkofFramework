@@ -2,10 +2,8 @@
 namespace Pkof\Services\Response;
 
 /**
- * Created by PhpStorm.
- * User: likun
- * Date: 17/2/5
- * Time: AM3:49
+ * Interface ResponseInterface
+ * @package Pkof\Services\Response
  */
 interface ResponseInterface
 {

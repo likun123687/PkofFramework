@@ -1,5 +1,5 @@
 <?php
-
+namespace Pkof\Services\Validator\ValidatorException;
 /**
  * Created by PhpStorm.
  * User: likun
@@ -10,9 +10,10 @@ class ValidatorException extends \Exception
 {
     private $errorMsg;
 
-    public function setErrorMsg($errorMsg)
+    public function __construct($errorMsg)
     {
         $this->errorMsg = $errorMsg;
+        parent::__construct();
     }
 
     public function getErrorMsg()

@@ -2,7 +2,7 @@
 namespace Pkof\Services\Validator;
 
 use Pkof\Services\Request\Request;
-use Pkof\Services\Response\Response;
+use Pkof\Services\Validator\ValidatorException\ValidatorException;
 
 /**
  * Created by PhpStorm.
@@ -13,12 +13,11 @@ use Pkof\Services\Response\Response;
 class RequestValidator extends Validator
 {
     protected $request;
-    protected $response;
 
-    public function __construct(Request $request, Response $response)
+    public function __construct(Request $request)
     {
-        $this->request  = $request;
-        $this->response = $response;
+        $this->request = $request;
+        parent::__construct($request->all());
     }
 
     public function rules()
@@ -40,15 +39,16 @@ class RequestValidator extends Validator
     public function customerError()
     {
         return [
-            "customer.sdff" => 'sdff',
+            "customer.required" => 'I am a customer error',
         ];
     }
 
     public function validate()
     {
         parent::validate();
-        if (!empty($this->errors)) {
-            throw 
+        $err = $this->errors;
+        if (!empty($err)) {
+            throw  new ValidatorException($err);
         }
     }
 }

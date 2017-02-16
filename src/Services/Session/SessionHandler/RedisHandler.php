@@ -6,7 +6,7 @@ use Predis\Session\Handler;
 
 /**
  * Class RedisHandler
- * @author likun
+ * @package Pkof\Services\Session\SessionHandler
  */
 class RedisHandler extends Handler
 {

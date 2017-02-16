@@ -1,12 +1,16 @@
 <?php
-/**
- * @filename php/pkof/app/Services/Router/Router.php
- * @touch    15/01/2017 13:37
- * @author   likun <378186878@qq.com>
- * @version  1.0.0
- */
+
 namespace Pkof\Services\Router;
 
+use Pkof\Services\Request\Request;
+use Pkof\Services\MiddlewareProcess\MiddlewareProcess;
+use Pkof\Exceptions\Error\InvalidArgumentWithContextException;
+use Pkof\Exceptions\Error\RuntimeWithContextException;
+
+/**
+ * Class Router
+ * @package Pkof\Services\Router
+ */
 class Router
 {
     const LETTER_AND_NUMBER_RE = '/\{[A-Za-z0-9]+\}/';
@@ -32,32 +36,30 @@ class Router
         $this->middleProcess = $middleProcess;
     }
 
-
     /**
      * @param $method
      * @param $params
      *
      * @return $this
-     * @throws NotSupportMethodException
      */
     public function __call($method, $params)
     {
         if (!in_array($method, $this->allowMethod)) {
-            throw new NotSupportMethodException('not support method');
+            throw new InvalidArgumentWithContextException('Not support method', $method);
         }
         if (count($params) !== 2) {
-            throw new \Exception('wrong router params register, url or callback can not be empty string.');
+            throw new InvalidArgumentWithContextException('Wrong router params register, url or callback can not be empty string.');
         }
 
         $url      = $params[0];
         $callback = $params[1];
 
         if ($url == "" || $callback == "") {
-            throw new \Exception('wrong router params register, url or callback can not be empty string.');
+            throw new RuntimeWithContextException('Wrong router params register, url or callback can not be empty string.');
         }
 
         if (is_string($callback) && strpos(trim($callback, '@'), '@') == false) {
-            throw new \Exception('controller and method router error');
+            throw new InvalidArgumentWithContextException('Controller and method router error', $callback);
         }
 
         if ($method == 'any') {
@@ -82,17 +84,15 @@ class Router
         return $this;
     }
 
-
     /**
      * @param $patternArr
      *
      * @return $this
-     * @throws \Exception
      */
     public function where($patternArr)
     {
         if (!is_array($patternArr)) {
-            throw new \Exception('params error');
+            throw new InvalidArgumentWithContextException('Where params error.', $patternArr);
         }
 
         if (empty($this->flag)) {
@@ -105,15 +105,14 @@ class Router
     }
 
     /**
-     * Add router to group
-     *
      * @param $groupName
      *
+     * @return $this
      */
     public function group($groupName)
     {
         if (empty($groupName)) {
-            throw new \Exception('group name can not empty');
+            throw new InvalidArgumentWithContextException('Group name can not empty.', $groupName);
         }
 
         if (empty($this->flag)) {
@@ -128,75 +127,70 @@ class Router
         return $this;
     }
 
+    /**
+     * @param       $url
+     * @param       $callback
+     * @param array $matchParams
+     */
     private function callbackHandle($url, $callback, $matchParams = [])
     {
-        $call_func   = NULL;
-        $call_params = $matchParams;
-        $params      = [];
+        $callFunc   = NULL;
+        $callParams = $matchParams;
 
         if (is_object($callback) && ($callback instanceof \Closure)) {
-            $reflect   = new \ReflectionFunction($callback);
-            $params    = $reflect->getParameters();
-            $call_func = $reflect;
+            $reflect  = new \ReflectionFunction($callback);
+            $params   = $reflect->getParameters();
+            $callFunc = $reflect;
 
         } elseif (is_string($callback)) {
             $ctrl = explode('@', $callback);
             if (count($ctrl) !== 2) {
-                throw new \Exception('error callback register' . $callback);
+                throw new RuntimeWithContextException('Error callback register.' . $callback);
             }
             $controller_name = $ctrl[0];
             $method_name     = $ctrl[1];
 
-            $reflect   = new ReflectionClass($controller_name);
-            $call_func = $reflect->getMethod($method_name);
-            $params    = $reflect->getParameters();
+            $reflect  = new \ReflectionClass($controller_name);
+            $callFunc = $reflect->getMethod($method_name);
+            $params   = $callFunc->getParameters();
 
         } else {
-            throw new Exception('params error');
+            throw new InvalidArgumentWithContextException('Params error', $callback);
         }
 
         if (count($params) > 0 && $params[0] instanceof Request) {
-            array_unshift($call_params, $this->request);
+            array_unshift($callParams, $this->request);
         }
 
         //before middle handle
-        $this->middleProcess->beforeHandle($url, $matchParams);
-
-        call_user_func_array($call_func, $call_params);
-
+        $this->middleProcess->before($url, $matchParams);
+        call_user_func_array($callFunc, $callParams);
         //after middle handle
-        $this->middleProcess->afterHandle($url, $matchParams);
+        $this->middleProcess->after($url, $matchParams);
     }
 
-    public function before($middleware)
-    {
-        $this->middleProcess->before($this->flag, $middleware);
-    }
 
-    public function after($middleware)
-    {
-        $this->middleProcess->after($this->flag, $middleware);
-    }
-
+    /**
+     * dispatch the router
+     */
     public function dispatch()
     {
         //common rules
         if (isset($this->commonRules[$this->requestUrl])) {
             if (isset($this->commonRules[$this->requestUrl][$this->requestMethod])) {
                 $callback = $this->commonRules[$this->requestUrl][$this->requestMethod]['callback'];
-                $this->callbackHandle($url, $callback);
+                $this->callbackHandle($this->requestUrl, $callback);
             }
         } else {
             foreach ($this->rexRules as $url => $rule) {
-                $pattern = isset($this->patternArr[$url]) ? $this->patternArr[$url] : [];
+                $pattern = isset($this->rexPatternArr[$url]) ? $this->rexPatternArr[$url] : [];
                 $tokens  = [];
                 $result  = preg_match_all(self::LETTER_AND_NUMBER_RE, $url, $tokens);
 
-                //check error
                 if ($result === false) {
-                    throw new \Exception('error happen');
+                    throw new RuntimeWithContextException('Rex Error happen.', preg_last_error());
                 } elseif ($result == 0) {
-                    throw new \Exception('Error router url register');
+                    throw new InvalidArgumentWithContextException('Error router url register', [$url, $rule]);
                 }
 
                 $params = $tokens[0];
@@ -212,11 +206,10 @@ class Router
                 $rexUrl      = str_replace($params, $rexArr, $url);
                 $matchResult = [];
 
-                //match the request url
                 if (preg_match('/' . str_replace('/', '\/', $rexUrl) . '/', $this->requestUrl, $matchResult) && $matchResult[0] == $this->requestUrl) {
                     if (isset($rule[$this->requestMethod]['callback'])) {
                         $callback = $rule[$this->requestMethod]['callback'];
-                        $this->callbackHandle($url, $callback, array_slice(1, $matchResult));
+                        $this->callbackHandle($url, $callback, array_slice($matchResult, 1));
                         break;
                     }
                 }

@@ -5,9 +5,10 @@ namespace Pkof\Services\Request;
 use Pkof\Services\Cookie\CookieHandler;
 use Pkof\Services\Session\Session;
 
+
 /**
  * Class Request
- * @author likun
+ * @package Pkof\Services\Request
  */
 class Request implements RequestInterface
 {
@@ -43,6 +44,12 @@ class Request implements RequestInterface
     private $cookieHandler;
     private $session;
 
+    /**
+     * Request constructor.
+     *
+     * @param CookieHandler $cookieHandler
+     * @param Session       $session
+     */
     public function __construct(CookieHandler $cookieHandler, Session $session)
     {
         $this->cookieHandler = $cookieHandler;
@@ -72,6 +79,9 @@ class Request implements RequestInterface
         }
     }
 
+    /**
+     * @return string
+     */
     private function generateUrl()
     {
         $port = $this->port == 80 || $this->port == 443 ? '' : $this->port;
