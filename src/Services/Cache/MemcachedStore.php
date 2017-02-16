@@ -29,13 +29,6 @@ class MemcachedStore
     /**
      * @param $key
      *
-     * @return array|string
-     */
-
-
-    /**
-     * @param $key
-     *
      * @return mixed
      */
     public function get($key)
