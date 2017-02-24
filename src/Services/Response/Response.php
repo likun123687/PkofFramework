@@ -79,6 +79,14 @@ class Response implements ResponseInterface
 
     public function render()
     {
+        //set response code
+        http_response_code($this->status);
+
+        //set header
+        foreach ($this->headers as $key => $value) {
+            header($key . ': ' . $value);
+        }
+
         switch ($this->contentType->getContentType()) {
             case 'utf-8':
                 echo $this->toJson();
@@ -88,7 +96,7 @@ class Response implements ResponseInterface
                 break;
         }
 
-        throw new \Exception('can not render content type');
+        throw new \RuntimeException('Can not render content type: ' . var_export($this->contentType->getContentType(), true));
     }
 
 }
