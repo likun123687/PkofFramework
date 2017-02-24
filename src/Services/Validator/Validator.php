@@ -82,6 +82,11 @@ abstract class Validator
         return $params;
     }
 
+    /**
+     * @param $attr
+     *
+     * @return mixed
+     */
     private function handleName($attr)
     {
         $names = $this->names();
@@ -94,6 +99,11 @@ abstract class Validator
         return $name;
     }
 
+    /**
+     * @param $params
+     *
+     * @return mixed
+     */
     protected function handleParameterNaming($params)
     {
         $names = $this->names();
@@ -110,6 +120,9 @@ abstract class Validator
         return $params;
     }
 
+    /**
+     * parse Customer Error
+     */
     protected function parseCustomerError()
     {
         $customerErrors = $this->customerError();
@@ -124,6 +137,9 @@ abstract class Validator
         }
     }
 
+    /**
+     * parse error
+     */
     private function parseError()
     {
         $defaultErrorTexts = $this->defaultErrorText();
@@ -154,6 +170,9 @@ abstract class Validator
         }
     }
 
+    /**
+     * validate
+     */
     public function validate()
     {
         $rules = $this->rules();

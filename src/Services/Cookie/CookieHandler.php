@@ -10,6 +10,13 @@ use Pkof\Exceptions\Error\RuntimeWithContextException;
  */
 class CookieHandler
 {
+    private $adapter;
+
+    public function __construct(CookieAdapter $adapter)
+    {
+        $this->adapter = $adapter;
+    }
+
     /**
      * @param        $name
      * @param string $default
@@ -18,7 +25,7 @@ class CookieHandler
      */
     public function get($name, $default = '')
     {
-        return isset($_COOKIE[$name]) ? $_COOKIE[$name] : $default;
+        return isset($this->adapter[$name]) ? $this->adapter[$name] : $default;
     }
 
     /**
@@ -28,7 +35,7 @@ class CookieHandler
      */
     public function has($name)
     {
-        return isset($_COOKIE[$name]);
+        return isset($this->adapter[$name]);
     }
 
     /**
@@ -52,7 +59,7 @@ class CookieHandler
      */
     public function delete($name)
     {
-        unset($_COOKIE[$name]);
+        unset($this->adapter[$name]);
         setcookie($name, "", time() - 3600);
     }
 

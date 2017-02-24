@@ -30,6 +30,12 @@ class Router
     protected $request;
     protected $middleProcess;
 
+    /**
+     * Router constructor.
+     *
+     * @param Request           $request
+     * @param MiddlewareProcess $middleProcess
+     */
     public function __construct(Request $request, MiddlewareProcess $middleProcess)
     {
         $this->request       = $request;

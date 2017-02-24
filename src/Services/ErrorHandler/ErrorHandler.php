@@ -8,7 +8,7 @@ use Pkof\Services\Response\Response;
  * Class ErrorHandler
  * @package Pkof\Services\ErrorHandler
  */
-class ErrorHandler
+class ErrorHandler implements ErrorHandlerInterface
 {
     private $request;
     private $response;
@@ -27,7 +27,7 @@ class ErrorHandler
         $this->exception = $e;
     }
 
-    public function handler()
+    public function handle()
     {
         //if http exception
         //if validator exception

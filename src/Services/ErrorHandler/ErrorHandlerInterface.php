@@ -1,5 +1,5 @@
 <?php
-
+namespace Pkof\Services\ErrorHandler;
 /**
  * Interface ErrorHandlerInterface
  */

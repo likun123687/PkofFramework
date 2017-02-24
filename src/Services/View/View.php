@@ -1,5 +1,5 @@
 <?php
-namespace Pkof\View;
+namespace Pkof\Services\View;
 /**
  * Created by PhpStorm.
  * User: likun

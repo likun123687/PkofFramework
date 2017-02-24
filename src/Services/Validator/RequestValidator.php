@@ -5,10 +5,8 @@ use Pkof\Services\Request\Request;
 use Pkof\Services\Validator\ValidatorException\ValidatorException;
 
 /**
- * Created by PhpStorm.
- * User: likun
- * Date: 17/2/13
- * Time: PM9:24
+ * Class RequestValidator
+ * @package Pkof\Services\Validator
  */
 class RequestValidator extends Validator
 {

@@ -4,10 +4,8 @@ namespace Pkof\Services\Response;
 use Pkof\Exceptions\Error\RuntimeWithContextException;
 
 /**
- * Created by PhpStorm.
- * User: likun
- * Date: 17/2/5
- * Time: AM5:06
+ * Class ContentType
+ * @package Pkof\Services\Response
  */
 class ContentType
 {

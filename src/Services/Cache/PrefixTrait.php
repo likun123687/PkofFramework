@@ -23,6 +23,11 @@ trait PrefixTrait
         $this->prefix = $prefix;
     }
 
+    /**
+     * @param $key
+     *
+     * @return array|string
+     */
     private function getPrefixKey($key)
     {
         if (is_string($key)) {

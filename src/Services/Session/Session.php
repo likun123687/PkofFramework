@@ -9,48 +9,98 @@ namespace Pkof\Services\Session;
 class Session implements SessionInterface
 {
     private $flashKeyName;
+    private $sessionAdapter;
 
-    public function __construct($flashKeyName)
+    /**
+     * Session constructor.
+     *
+     * @param SessionAdapter $sessionAdapter
+     * @param                $flashKeyName
+     */
+    public function __construct(SessionAdapter $sessionAdapter, $flashKeyName)
     {
-        $this->flashKeyName = $flashKeyName;
+        $this->sessionAdapter = $sessionAdapter;
+        $this->flashKeyName   = $flashKeyName;
     }
 
+    /**
+     * @param      $key
+     * @param null $default
+     *
+     * @return mixed|null
+     */
     public function get($key, $default = NULL)
     {
-        $value = isset($_SESSION[$key]) ? $_SESSION[$key] : $default;
-        if (isset($_SESSION[$this->flashKeyName][$key])) {
-            unset($_SESSION[$key]);
+        $value = isset($this->sessionAdapter[$key]) ? $this->sessionAdapter[$key] : $default;
+        if ($this->sessionAdapter[$this->flashKeyName][$key]) {
+            unset($this->sessionAdapter[$key]);
         }
 
         return $value;
     }
 
+    /**
+     * @return array
+     */
     public function all()
     {
-        return $_SESSION;
+        return $this->sessionAdapter->toArray();
     }
 
+    /**
+     * @param $name
+     *
+     * @return bool
+     */
     public function has($name)
     {
-        return isset($_SESSION[$name]);
+        return isset($this->sessionAdapter[$name]);
     }
 
+    /**
+     * @param $name
+     * @param $value
+     */
     public function put($name, $value)
     {
-        $_SESSION[$name] = $value;
+        $this->sessionAdapter[$name] = $value;
     }
 
+    /**
+     * @param      $name
+     * @param null $default
+     *
+     * @return mixed|null
+     */
     public function pull($name, $default = NULL)
     {
-        $result = isset($_SESSION[$name]) ? $_SESSION[$name] : $default;
-        unset($_SESSION[$name]);
+        $result = isset($this->sessionAdapter[$name]) ? $this->sessionAdapter[$name] : $default;
+        unset($this->sessionAdapter[$name]);
 
         return $result;
     }
 
+    /**
+     * @param $name
+     */
     public function forget($name)
     {
-        unset($_SESSION[$name]);
+        unset($this->sessionAdapter[$name]);
+    }
+
+    /**
+     * @param $key
+     * @param $value
+     */
+    public function flash($key, $value)
+    {
+        $this->sessionAdapter[$key] = $value;
+
+        if (!isset($this->sessionAdapter[$this->flashKeyName])) {
+            $this->sessionAdapter[$this->flashKeyName] = [];
+        }
+
+        $this->sessionAdapter[$this->flashKeyName][] = $key;
     }
 
     public function flush()
@@ -91,16 +141,5 @@ class Session implements SessionInterface
     public function destroy()
     {
         return session_destroy();
-    }
-
-    public function flash($key, $value)
-    {
-        $_SESSION[$key] = $value;
-
-        if (!isset($_SESSION[$this->flashKeyName])) {
-            $_SESSION[$this->flashKeyName] = [];
-        }
-
-        $_SESSION[$this->flashKeyName][] = $key;
     }
 }
