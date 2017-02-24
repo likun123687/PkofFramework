@@ -1,10 +1,8 @@
 <?php
 namespace Pkof\Services\Validator\ValidatorException;
 /**
- * Created by PhpStorm.
- * User: likun
- * Date: 17/2/15
- * Time: AM4:43
+ * Class ValidatorException
+ * @package Pkof\Services\Validator\ValidatorException
  */
 class ValidatorException extends \Exception
 {

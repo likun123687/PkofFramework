@@ -47,11 +47,17 @@ class ContentType
         }
     }
 
+    /**
+     * @return string
+     */
     public function getContentType()
     {
         return $this->contentType;
     }
 
+    /**
+     * @return string
+     */
     public function getCharset()
     {
         return $this->charset;
