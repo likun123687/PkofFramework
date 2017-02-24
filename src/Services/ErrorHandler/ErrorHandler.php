@@ -5,12 +5,10 @@ use Pkof\Services\Request\Request;
 use Pkof\Services\Response\Response;
 
 /**
- * Created by PhpStorm.
- * User: likun
- * Date: 17/2/7
- * Time: AM4:47
+ * Class ErrorHandler
+ * @package Pkof\Services\ErrorHandler
  */
-class ErrorHandler
+class ErrorHandler implements ErrorHandlerInterface
 {
     private $request;
     private $response;
@@ -29,7 +27,7 @@ class ErrorHandler
         $this->exception = $e;
     }
 
-    public function handler()
+    public function handle()
     {
         if (!($this->exception instanceof \Exception)) {
             echo "xxxx";
@@ -39,6 +37,12 @@ class ErrorHandler
         if ($exceptionType == 'Pkof\Exceptions\Http\HttpException') {
             $this->response->setStatus($this->exception->getCode());
             $this->response->setContent('');
-        } elseif ()
+        }
+// elseif () {
+//
+//        }
+        //if http exception
+        //if validator exception
+        //if other exception
     }
 }

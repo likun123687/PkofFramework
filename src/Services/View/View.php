@@ -1,5 +1,5 @@
 <?php
-namespace Pkof\View;
+namespace Pkof\Services\View;
 /**
  * Created by PhpStorm.
  * User: likun
@@ -13,23 +13,38 @@ class View
     private $data = [];
     private $path;
 
+    /**
+     * View constructor.
+     *
+     * @param $viewPathRoot
+     */
     public function __construct($viewPathRoot)
     {
         $this->viewPathRoot = $viewPathRoot;
     }
 
+    /**
+     * @param array $data
+     */
     public function with(array $data)
     {
-
+        $this->data = $data;
     }
 
+    /**
+     * @param $path
+     */
     public function path($path)
     {
-
+        $this->path = $path;
     }
 
+    /**
+     * render the view file
+     */
     public function render()
     {
-
+        extract($this->data);
+        require $this->viewPathRoot . '/' . $this->path;
     }
 }

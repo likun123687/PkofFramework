@@ -4,7 +4,7 @@ namespace Pkof\Services\Cache;
 
 /**
  * Class Cache
- * @author likun
+ * @package Pkof\Services\Cache
  */
 class Cache implements StoreInterface
 {
@@ -12,6 +12,7 @@ class Cache implements StoreInterface
 
     /**
      * Cache constructor.
+     *
      * @param StoreInterface $store
      */
     public function __construct(StoreInterface $store)
@@ -46,7 +47,7 @@ class Cache implements StoreInterface
     }
 
     /**
-     * @param $key
+     * @param     $key
      * @param int $value
      */
     public function increment($key, $value = 1)
@@ -55,7 +56,7 @@ class Cache implements StoreInterface
     }
 
     /**
-     * @param $key
+     * @param     $key
      * @param int $value
      */
     public function decrement($key, $value = 1)

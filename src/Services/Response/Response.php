@@ -1,11 +1,12 @@
 <?php
 
 namespace Pkof\Services\Response;
+
+use Pkof\Exceptions\Error\RuntimeWithContextException;
+
 /**
- * Created by PhpStorm.
- * User: likun
- * Date: 17/2/5
- * Time: AM3:49
+ * Class Response
+ * @package Pkof\Services\Response
  */
 class Response implements ResponseInterface
 {
@@ -16,31 +17,52 @@ class Response implements ResponseInterface
     private $content;
     private $headers = [];
 
+    /**
+     * Response constructor.
+     *
+     * @param ContentType $contentType
+     */
     public function __construct(ContentType $contentType)
     {
         $this->contentType = $contentType;
     }
 
+    /**
+     * @return mixed
+     */
     public function getStatus()
     {
         return $this->status;
     }
 
+    /**
+     * @param $status
+     */
     public function setStatus($status)
     {
         $this->status = $status;
     }
 
+    /**
+     * @return mixed
+     */
     public function getContent()
     {
         return $this->content;
     }
 
+    /**
+     * @param $content
+     */
     public function setContent($content)
     {
         $this->content = $content;
     }
 
+    /**
+     * @param $key
+     * @param $values
+     */
     public function header($key, $values)
     {
         $this->headers[$key] = $values;
@@ -50,6 +72,9 @@ class Response implements ResponseInterface
         }
     }
 
+    /**
+     * @param array $headers
+     */
     public function withHeaders(array $headers)
     {
         foreach ($headers as $key => $value) {
@@ -61,12 +86,18 @@ class Response implements ResponseInterface
         }
     }
 
+    /**
+     * @param array $data
+     */
     public function json(array $data)
     {
         $this->contentType->checkContentType('application/json');
         $this->content = $data;
     }
 
+    /**
+     * @return string
+     */
     private function toJson()
     {
         $jsonBody = json_encode($this->content);
@@ -77,6 +108,9 @@ class Response implements ResponseInterface
         return $jsonBody;
     }
 
+    /**
+     * Render content
+     */
     public function render()
     {
         //set response code
@@ -96,7 +130,7 @@ class Response implements ResponseInterface
                 break;
         }
 
-        throw new \RuntimeException('Can not render content type: ' . var_export($this->contentType->getContentType(), true));
+        throw new RuntimeWithContextException('Can not render content type', $this->contentType->getContentType());
     }
 
 }

@@ -2,9 +2,13 @@
 
 namespace Pkof\Services\Request;
 
+use Pkof\Services\Cookie\CookieHandler;
+use Pkof\Services\Session\Session;
+
+
 /**
  * Class Request
- * @author likun
+ * @package Pkof\Services\Request
  */
 class Request implements RequestInterface
 {
@@ -37,6 +41,21 @@ class Request implements RequestInterface
     private $query;
     private $url;
 
+    private $cookieHandler;
+    private $session;
+
+    /**
+     * Request constructor.
+     *
+     * @param CookieHandler $cookieHandler
+     * @param Session       $session
+     */
+    public function __construct(CookieHandler $cookieHandler, Session $session)
+    {
+        $this->cookieHandler = $cookieHandler;
+        $this->session       = $session;
+    }
+
     private function parseContentFromBody()
     {
         if ($this->contentType == self::CONTENT_TYPE_JSON) {
@@ -60,6 +79,9 @@ class Request implements RequestInterface
         }
     }
 
+    /**
+     * @return string
+     */
     private function generateUrl()
     {
         $port = $this->port == 80 || $this->port == 443 ? '' : $this->port;
@@ -74,7 +96,7 @@ class Request implements RequestInterface
         $this->contentType = $_SERVER['CONTENT_TYPE'];
         $this->remoteIp    = $_SERVER['REMOTE_ADDR'];
         $this->remotePort  = $_SERVER['REMOTE_PORT'];
-        $this->isKeepAlive = isset($_SERVER['HTTP_CONNECTION']) && $_SERVER['HTTP_CONNECTION'] == 'keep-alive' ? true : false;
+        $this->isKeepAlive = (isset($_SERVER['HTTP_CONNECTION']) && $_SERVER['HTTP_CONNECTION'] == 'keep-alive') ? true : false;
 
         $this->scheme   = !empty($_SERVER['HTTPS']) ? 'https' : 'http';
         $this->user     = !empty($_SERVER['PHP_AUTH_USER']) ? $_SERVER['PHP_AUTH_USER'] : '';
@@ -90,16 +112,28 @@ class Request implements RequestInterface
         $this->initInputFromGlobal();
     }
 
+    /**
+     * @return mixed
+     */
     public function path()
     {
         return $this->path;
     }
 
+    /**
+     * @return mixed
+     */
     public function url()
     {
         return $this->url;
     }
 
+    /**
+     * @param        $name
+     * @param string $default
+     *
+     * @return array|mixed|string
+     */
     public function input($name, $default = '')
     {
         if (empty($name)) {
@@ -119,16 +153,29 @@ class Request implements RequestInterface
         return $result;
     }
 
+    /**
+     * @return mixed
+     */
     public function method()
     {
         return $this->method;
     }
 
+    /**
+     * @param $method
+     *
+     * @return bool
+     */
     public function isMethod($method)
     {
         return $this->method == $method;
     }
 
+    /**
+     * @param $name
+     *
+     * @return bool
+     */
     public function has($name)
     {
         if (empty($name)) {
@@ -147,14 +194,36 @@ class Request implements RequestInterface
         return true;
     }
 
+    /**
+     * @return array
+     */
     public function all()
     {
         return $this->inputParamsArr;
     }
 
+    /**
+     * @return mixed
+     */
     public function body()
     {
         return $this->body;
+    }
+
+    /**
+     * @return Session
+     */
+    public function session()
+    {
+        return $this->session;
+    }
+
+    /**
+     * @return CookieHandler
+     */
+    public function cookieHandle()
+    {
+        return $this->cookieHandler;
     }
 
 }

@@ -1,9 +1,10 @@
 <?php
 namespace Pkof\Services\Request;
 
+
 /**
  * Interface RequestInterface
- * @author likun
+ * @package Pkof\Services\Request
  */
 interface RequestInterface
 {
@@ -21,5 +22,3 @@ interface RequestInterface
 
     public function all();
 }
-
-?>

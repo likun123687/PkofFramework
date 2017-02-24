@@ -2,19 +2,23 @@
 
 namespace Pkof\Services\Cache;
 
+use Pkof\Exceptions\Error\InvalidArgumentWithContextException;
+use Pkof\Exceptions\Error\RuntimeWithContextException;
+
 /**
  * Class MemcachedStore
  * @author likun
  */
 class MemcachedStore implements StoreInterface
 {
+    use PrefixTrait;
     private $client;
-    private $prefix;
 
     /**
      * MemcachedStore constructor.
+     *
      * @param \Memcached $client
-     * @param $prefix
+     * @param            $prefix
      */
     public function __construct(\Memcached $client, $prefix)
     {
@@ -22,77 +26,75 @@ class MemcachedStore implements StoreInterface
         $this->prefix = $prefix;
     }
 
-    private function getPrefixKey($key)
-    {
-        if (is_string($key)) {
-            return $this->prefix . $key;
-        } elseif (is_array($key)) {
-            return array_walk($key, function (&$key, $itemKey, $value) {
-
-            });
-        }
-        throw new \InvalidArgumentException("key type error" . var_export($key, true));
-    }
-
     /**
      * @param $key
+     *
      * @return mixed
      */
     public function get($key)
     {
-        return $this->client->get($key);
+        return $this->client->get($this->getPrefixKey($key));
     }
 
     /**
      * @param array $keys
+     *
      * @return mixed
      */
     public function many(array $keys)
     {
         if (empty($keys)) {
-            throw new \InvalidArgumentException('Can not get multi keys by empty array: ' . var_export($keys, true));
+            throw new InvalidArgumentWithContextException('Can not get multi keys by empty array', $keys);
         }
-        return $this->client->getMulti($keys);
+
+        return $this->client->getMulti($this->getPrefixKey($keys));
     }
 
     /**
-     * @param $key
-     * @param $value
+     * @param     $key
+     * @param     $value
      * @param int $minutes
      */
     public function put($key, $value, $minutes = 24 * 60)
     {
+        $key = $this->getPrefixKey($key);
         if (false == $this->client->set($key, $value, $minutes * 60)) {
-            throw new \RuntimeException('Setex cache error: ' . print_r(func_get_args(), true) . $this->client->getResultMessage());
+            throw new RuntimeWithContextException('Setex cache error: ' . $this->client->getResultMessage(), func_get_args());
         }
     }
 
 
     /**
-     * @param $key
+     * @param     $key
      * @param int $value
+     *
      * @return int
      */
     public function increment($key, $value = 1)
     {
+        $key = $this->getPrefixKey($key);
         $result = $this->client->increment($key, $value);
         if (false == $result) {
-            throw new \RuntimeException('increment key error: ' . print_r(func_get_args(), true) . $this->client->getResultMessage());
+            throw new RuntimeWithContextException('Increment key error: ' . $this->client->getResultMessage(), func_get_args());
         }
+
         return $result;
     }
 
     /**
-     * @param $key
+     * @param     $key
      * @param int $value
+     *
      * @return int
      */
     public function decrement($key, $value = 1)
     {
+        $key = $this->getPrefixKey($key);
         $result = $this->client->decrement($key, $value);
         if (false == $result) {
-            throw new \RuntimeException('Decrement key error: ' . print_r(func_get_args(), true) . $this->client->getResultMessage());
+            throw new RuntimeWithContextException('Decrement key error: ' . $this->client->getResultMessage(), func_get_args());
         }
+
         return $result;
     }
 
@@ -102,8 +104,9 @@ class MemcachedStore implements StoreInterface
      */
     public function forever($key, $value)
     {
+        $key = $this->getPrefixKey($key);
         if (false == $this->client->set($key, $value)) {
-            throw new \RuntimeException('for forever cache error: ' . print_r(func_get_args(), true) . $this->client->getResultMessage());
+            throw new RuntimeWithContextException('Forever cache error: ' . $this->client->getResultMessage(), func_get_args());
         }
     }
 
@@ -112,8 +115,9 @@ class MemcachedStore implements StoreInterface
      */
     public function forget($key)
     {
+        $key = $this->getPrefixKey($key);
         if (false == $this->client->delete($key)) {
-            throw new \RuntimeException('delete key error: ' . print_r(func_get_args(), true) . $this->client->getResultMessage());
+            throw new RuntimeWithContextException('Delete key error: ' . $this->client->getResultMessage(), func_get_args());
         }
     }
 
@@ -123,23 +127,7 @@ class MemcachedStore implements StoreInterface
     public function flush()
     {
         if (false == $this->client->flush()) {
-            throw new \RuntimeException('flush cache error: ' . $this->client->getResultMessage());
+            throw new RuntimeWithContextException('flush cache error: ' . $this->client->getResultMessage());
         }
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getPrefix()
-    {
-        return $this->prefix;
-    }
-
-    /**
-     * @param $prefix
-     */
-    public function setPrefix($prefix)
-    {
-        $this->prefix = $prefix;
     }
 }
